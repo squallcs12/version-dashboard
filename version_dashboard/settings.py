@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework_swagger',
+    'rest_framework.authtoken',
 
     'accounts',
     'dashboard',
@@ -154,3 +155,24 @@ AUTH_USER_MODEL = 'accounts.User'
 
 vars().update(env.email(backend='djcelery_email.backends.CeleryEmailBackend'))
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+        },
+        'basic': {
+            'type': 'basic',
+        }
+    },
+}
