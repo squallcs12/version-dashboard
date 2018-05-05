@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/', include(('dashboard.api_urls', 'dashboard'), namespace='dashboard_api')),
     path('dashboard/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
     path('docs/', schema_view),
+    path('accounts/', include('allauth.urls')),
 ]

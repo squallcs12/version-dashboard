@@ -19,7 +19,7 @@
     <div class="row">
       <div class="col">
         <nav>
-          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <div class="nav nav-tabs" id="environment-tab" role="tablist">
             {% for environment in environments %}
               <a class="nav-item nav-link"
                  id="nav-{{ environment }}-tab" data-toggle="tab"
@@ -58,8 +58,6 @@
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script>
   jQuery(function() {
-    jQuery(location.hash + '-tab').click();
-
     jQuery('.nav-link').click(function () {
       location.href = jQuery(this).prop('href')
     });
@@ -85,7 +83,13 @@
 
     reloadSecondsBox.change(function () {
       Cookies.set('reload_seconds', jQuery(this).val());
-    })
+    });
+
+    if (location.hash) {
+      jQuery(location.hash + '-tab').click();
+    } else {
+      jQuery('#environment-tab a:first-child').click();
+    }
   })
   </script>
 {% endblock %}
