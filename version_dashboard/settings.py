@@ -11,21 +11,36 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+env = environ.Env(
+    DEBUG=(bool, True),
+    SECRET_KEY=(str, 'cau8d1g^$_=k+z1ge1gbzvi4+21o4tyn_sc-&_3!&)c(b19jci'),
+    ALLOWED_HOSTS=(str, ''),
+    DATABASE_URL=(str, 'sqlite:///db.sqlite3'),
+    EMAIL_URL=(str, 'smtp://localhost:25'),
+    DEFAULT_FROM_EMAIL=(str, 'admin@domain.com'),
+    REDIS_URL=(str, 'rediscache://127.0.0.1:6379/1')
+)
+ENV = env  # so it will be copied to django.conf.settings
+env.read_env('.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'cau8d1g^$_=k+z1ge1gbzvi4+21o4tyn_sc-&_3!&)c(b19jci'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('ALLOWED_HOSTS') or []
+if ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ALLOWED_HOSTS.split(',')
 
 
 # Application definition
@@ -56,7 +71,7 @@ ROOT_URLCONF = 'version_dashboard.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,10 +91,12 @@ WSGI_APPLICATION = 'version_dashboard.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': env.db(),  # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
+    'extra': env.db('SQLITE_URL', default='sqlite:////tmp/my-tmp-sqlite.db')
+}
+
+CACHES = {
+    'default': env.cache('REDIS_URL')
 }
 
 
@@ -125,3 +142,6 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#std:setting-AUTH_USER_MODEL
 
 AUTH_USER_MODEL = 'accounts.User'
+
+vars().update(env.email(backend='djcelery_email.backends.CeleryEmailBackend'))
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
