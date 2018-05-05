@@ -21,6 +21,7 @@ schema_view = get_swagger_view(title='Version Dashboard API')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(('dashboard.api_urls', 'dashboard'), namespace='dashboard')),
+    path('api/', include(('dashboard.api_urls', 'dashboard'), namespace='dashboard_api')),
+    path('dashboard/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
     path('docs/', schema_view),
 ]

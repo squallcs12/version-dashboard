@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h1 class="alert alert-info text-center">SERVICE VERSION DASHBOARD</h1>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        {% for service_deploy in service_deploys %}
+          <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">{{ service_deploy.name }}</h5>
+              <span class="badge badge-secondary">{{ service_deploy.deploy_timestamp }}</span>
+              {% if service_deploy.is_deployed_today %}
+                <span class="badge badge-success">Today</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

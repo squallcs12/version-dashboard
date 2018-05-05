@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.views.generic import TemplateView
 from rest_framework import viewsets
 
 from dashboard.models import ServiceDeploy
@@ -18,3 +19,14 @@ class ServiceDeployViewSet(viewsets.ModelViewSet):
         else:
             service_deploy.deploy_timestamp = timezone.now()
             service_deploy.save()
+
+
+class IndexView(TemplateView):
+    template_name = 'dashboard/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context.update({
+            'service_deploys': ServiceDeploy.objects.all().order_by('name'),
+        })
+        return context
