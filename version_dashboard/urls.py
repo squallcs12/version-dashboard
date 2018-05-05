@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
 
+from dashboard.views import IndexView
+
 schema_view = get_swagger_view(title='Version Dashboard API')
 
 urlpatterns = [
@@ -25,4 +27,5 @@ urlpatterns = [
     path('dashboard/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
     path('docs/', schema_view),
     path('accounts/', include('allauth.urls')),
+    path('', IndexView.as_view(), name='homepage')
 ]

@@ -10,6 +10,9 @@
   </div>
   <div class="container">
     <div class="row">
+      <div class="col">
+        <a href="{% url 'account_logout' %}">Logout</a>
+      </div>
       <div class="col text-right">
         Reload per
         <input type="number" maxlength="2" max="999" min="15" style="width: 50px" id="reload_seconds"> seconds.
@@ -18,6 +21,14 @@
     </div>
     <div class="row">
       <div class="col">
+        <hr />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        {% if not environments %}
+          <div class="alert alert-warning">No data for displaying.</div>
+        {% endif %}
         <nav>
           <div class="nav nav-tabs" id="environment-tab" role="tablist">
             {% for environment in environments %}
