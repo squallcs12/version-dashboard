@@ -11,17 +11,37 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        {% for service_deploy in service_deploys %}
-          <div class="card" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{ service_deploy.name }}</h5>
-              <span class="badge badge-secondary">{{ service_deploy.deploy_timestamp }}</span>
-              {% if service_deploy.is_deployed_today %}
-                <span class="badge badge-success">Today</span>
-              {% endif %}
-            </div>
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            {% for environment in environments %}
+              <a class="nav-item nav-link {% if forloop.counter == 1 %}active{% endif %}"
+                 id="nav-{{ environment }}-tab" data-toggle="tab"
+                 href="#nav-{{ environment }}" role="tab" aria-controls="nav-{{ environment }}" aria-selected="true">
+                {{ environment.title }}
+              </a>
+            {% endfor %}
           </div>
-        {% endfor %}
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+          {% for environment in environments %}
+          <div class="tab-pane fade show {% if forloop.counter == 1 %}active{% endif %}" id="nav-{{ environment }}"
+               role="tabpanel" aria-labelledby="nav-{{ environment }}-tab">
+            {% for service_deploy in service_deploys %}
+              {% if environment == service_deploy.environment %}
+                <div class="card card-{{ service_deploy.environment }}" style="width: 18rem;">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ service_deploy.name }}</h5>
+                    <span class="badge badge-secondary">{{ service_deploy.deploy_timestamp }}</span>
+                    {% if service_deploy.is_deployed_today %}
+                      <span class="badge badge-success">Today</span>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
