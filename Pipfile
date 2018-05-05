@@ -9,6 +9,7 @@ django-environ = "*"
 django-celery-email = "*"
 django-extensions = "*"
 "psycopg2" = "*"
+gunicorn = "*"
 
 [dev-packages]
 ipdb = "*"
