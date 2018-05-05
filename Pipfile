@@ -10,6 +10,8 @@ django-celery-email = "*"
 django-extensions = "*"
 "psycopg2" = "*"
 gunicorn = "*"
+djangorestframework = "*"
+django-rest-swagger = "*"
 
 [dev-packages]
 ipdb = "*"
