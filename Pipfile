@@ -12,6 +12,7 @@ django-extensions = "*"
 gunicorn = "*"
 djangorestframework = "*"
 django-rest-swagger = "*"
+whitenoise = "*"
 
 [dev-packages]
 ipdb = "*"
