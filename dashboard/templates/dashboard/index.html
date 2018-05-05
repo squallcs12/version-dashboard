@@ -10,6 +10,13 @@
   </div>
   <div class="container">
     <div class="row">
+      <div class="col text-right">
+        Reload per
+        <input type="number" maxlength="2" max="999" min="15" style="width: 50px" id="reload_seconds"> seconds.
+        <span class="badge badge-info">(<span id="reload_countdown"></span>)</span>
+      </div>
+    </div>
+    <div class="row">
       <div class="col">
         <nav>
           <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -48,11 +55,36 @@
 {% endblock %}
 
 {% block js %}
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script>
   jQuery(function() {
-    jQuery(location.hash + '-tab').click()
+    jQuery(location.hash + '-tab').click();
+
     jQuery('.nav-link').click(function () {
       location.href = jQuery(this).prop('href')
+    });
+
+    var reloadSecondsBox = jQuery('#reload_seconds');
+
+    var reloadSeconds = Cookies.get('reload_seconds');
+    reloadSeconds = parseInt(reloadSeconds);
+    if (reloadSeconds < 15 || isNaN(reloadSeconds)) {
+      reloadSeconds = 15
+    }
+    reloadSecondsBox.val(reloadSeconds);
+
+    setTimeout(function () {
+      location.reload()
+    }, reloadSeconds * 1000);
+
+    jQuery('#reload_countdown').text(reloadSeconds);
+    setInterval(function () {
+      reloadSeconds -= 1;
+      jQuery('#reload_countdown').text(reloadSeconds);
+    }, 1000);
+
+    reloadSecondsBox.change(function () {
+      Cookies.set('reload_seconds', jQuery(this).val());
     })
   })
   </script>
