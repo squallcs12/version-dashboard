@@ -44,19 +44,23 @@
           {% for environment in environments %}
           <div class="tab-pane fade show" id="nav-{{ environment }}"
                role="tabpanel" aria-labelledby="nav-{{ environment }}-tab">
-            {% for service_deploy in service_deploys %}
-              {% if environment == service_deploy.environment %}
-                <div class="card card-{{ service_deploy.environment }}" style="width: 18rem;">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ service_deploy.name }}</h5>
-                    <span class="badge badge-secondary">{{ service_deploy.deploy_timestamp }}</span>
-                    {% if service_deploy.is_deployed_today %}
-                      <span class="badge badge-success">Today</span>
-                    {% endif %}
+            <div class="row">
+              {% for service_deploy in service_deploys %}
+                {% if environment == service_deploy.environment %}
+                  <div class="col-md-3" style="margin-bottom: 30px">
+                    <div class="card card-{{ service_deploy.environment }}">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ service_deploy.name }}</h5>
+                        <span class="badge badge-secondary">{{ service_deploy.deploy_timestamp }}</span>
+                        {% if service_deploy.is_deployed_today %}
+                          <span class="badge badge-success">Today</span>
+                        {% endif %}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              {% endif %}
-            {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
           {% endfor %}
         </div>
