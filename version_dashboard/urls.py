@@ -22,8 +22,10 @@ from dashboard.views import IndexView
 
 schema_view = get_swagger_view(title='Version Dashboard API')
 
+
 def health_check(request):
     return HttpResponse("OK")
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
