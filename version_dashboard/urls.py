@@ -31,6 +31,6 @@ urlpatterns = [
     path('dashboard/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
     path('docs/', schema_view),
     path('accounts/', include('allauth.urls')),
-    path('', IndexView.as_view(), name='homepage')
-    path('health_check', health_check, name='health_check')
+    path('', IndexView.as_view(), name='homepage'),
+    path('health_check', health_check, name='health_check'),
 ]
