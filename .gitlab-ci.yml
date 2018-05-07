@@ -1,0 +1,165 @@
+image: "inspectorio/python:2.7"
+
+variables:
+  PIP_NO_CACHE_DIR: "false"
+  PIP_CACHE_DIR: "${CI_PROJECT_DIR}/cache/pip"
+  WORKON_HOME: "${CI_PROJECT_DIR}/cache/pipenv"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - cache/pip
+
+stages:
+  - test
+  - build
+  - deploy
+
+test:
+  stage: test
+  services:
+    - name: postgres:9.6
+      alias: postgres
+  variables:
+    REDIS_URI: "redis://redis:6379/0"
+    DYNAMODB_URI: "http://dynamodb:8000"
+    DB_USER: test
+    DB_PASSWORD: test
+    DB_NAME: sms_test
+    DB_MASTER: test
+    POSTGRES_USER: test
+    POSTGRES_PASSWORD: test
+    POSTGRES_DB: test
+    DB_PORT: 5432
+    DB_HOST: postgres
+    REDIS_URI: "redis://redis:6379/0"
+  script:
+    - pipenv install --ignore-pipfile --dev
+    - pipenv run flake8
+
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+  only:
+    - master
+    - staging
+    - preprod
+    - demo
+    - prod
+    - /^release\/.*$/
+    - /^feature\/.*$/
+    - /^hotfix\/.*$/
+    - /^chore\/.*$/
+    - /^fix\/.*$/
+
+
+# codeclimate is disabled by default
+# TODO: enable when use Gitlab EE
+# TODO: enable when integrate with SonarQube
+.codequality:
+  stage: test
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  script:
+    - codeclimate
+  artifacts:
+    paths: [codeclimate.json]
+  allow_failure: true
+  only:
+    - master
+    - staging
+    - preprod
+    - demo
+    - prod
+    - /^release\/.*$/
+    - /^feature\/.*$/
+    - /^hotfix\/.*$/
+    - /^chore\/.*$/
+    - /^fix\/.*$/
+
+dockerize:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  script:
+    - build
+  only:
+    - master
+    - staging
+    - preprod
+    - demo
+    - prod
+
+deploy-test:
+  stage: deploy
+  script:
+    - install_dependencies
+    - deploy
+  environment:
+    name: dev
+    url: https://test.saas.inspectorio.com
+  only:
+    - master
+
+deploy-staging:
+  stage: deploy
+  script:
+    - install_dependencies
+    - deploy
+  environment:
+    name: staging
+    url: https://stag.saas.inspectorio.com
+  only:
+    - staging
+
+deploy-preprod:
+  stage: deploy
+  script:
+    - install_dependencies
+    - deploy
+  environment:
+    name: pre
+    url: https://pre.saas.inspectorio.com
+  only:
+    - preprod
+
+deploy-demo:
+  stage: deploy
+  script:
+    - install_dependencies
+    - deploy
+  environment:
+    name: demo
+    url: https://demo.saas.inspectorio.com
+  only:
+    - demo
+
+deploy-production:
+  stage: deploy
+  script:
+    - install_dependencies
+    - deploy
+  environment:
+    name: prod
+    url: https://app.inspectorio.com
+  only:
+    - prod
+
+.devops: &devops |
+  # Inspectorio GitLab pipeline shared libs
+  [[ "$TRACE" ]] && set -x
+  which curl || ( apt-get update -qq -y && apt-get install -qq -y curl ) || ( apk add --no-cache curl )
+  # only bash support 'process substitution'
+  # docker dind is alpine based. Use workaround instead
+  # source <(curl -s -XGET -H "PRIVATE-TOKEN: ${PIPELINE_AUTH}" "${PIPELINE_URL}")
+  curl -s -XGET -H "PRIVATE-TOKEN: ${PIPELINE_AUTH}" "${PIPELINE_URL}" -o pipeline.sh
+  source ./pipeline.sh
+
+
+before_script:
+  - *devops
+  - ssh_agent
+
+after_script:
+  - *devops
+  - cleanup
