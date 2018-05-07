@@ -103,3 +103,4 @@ ENV/
 # this project
 .idea/
 db.sqlite3
+staticfiles/
