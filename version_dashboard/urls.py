@@ -14,12 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.http import HttpResponse
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
 
 from dashboard.views import IndexView
 
 schema_view = get_swagger_view(title='Version Dashboard API')
+
+def health_check(request):
+    return HttpResponse("OK")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,4 +32,5 @@ urlpatterns = [
     path('docs/', schema_view),
     path('accounts/', include('allauth.urls')),
     path('', IndexView.as_view(), name='homepage')
+    path('health_check', health_check, name='health_check')
 ]
