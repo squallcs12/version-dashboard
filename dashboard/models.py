@@ -17,7 +17,7 @@ class ServiceDeploy(models.Model):
     @property
     def duration(self):
         if not self.previous_deploy_timestamp:
-            return None
+            return ''
         diff = self.deploy_timestamp - self.previous_deploy_timestamp
         times = []
         if diff.days:

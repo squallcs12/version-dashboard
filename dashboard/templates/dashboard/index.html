@@ -57,7 +57,9 @@
                           {% endif %}
                         </h5>
                         <span class="badge badge-secondary">{{ service_deploy.deploy_timestamp }}</span>
-                        <span class="badge badge-info">{{ service_deploy.duration }}</span>
+                        {% if service_deploy.duration %}
+                          <span class="badge badge-info">{{ service_deploy.duration }}</span>
+                        {% endif %}
                       </div>
                     </div>
                   </div>
