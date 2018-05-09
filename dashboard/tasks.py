@@ -7,7 +7,7 @@ from dashboard.models import ServiceDeploy
 
 
 @shared_task
-def fetch_gitlab_deployment():
+def fetch_gitlab_deployment(user_id):
     environments = ['prod', 'preprod', 'staging']
     service_deploys = []
 
@@ -32,6 +32,7 @@ def fetch_gitlab_deployment():
                 'name': project.name,
                 'deploy_timestamp': iso8601.parse_date(pipeline.finished_at)
             })
-            ServiceDeploy.objects.update_or_create(name=project.name, environment=pipeline.ref, defaults={
-                'deploy_timestamp': iso8601.parse_date(pipeline.finished_at)
-            })
+            ServiceDeploy.objects.update_or_create(name=project.name, environment=pipeline.ref, user_id=user_id,
+                                                   defaults={
+                                                       'deploy_timestamp': iso8601.parse_date(pipeline.finished_at)
+                                                   })
