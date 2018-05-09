@@ -31,6 +31,9 @@ def fetch_gitlab_deployment(user_id):
             timestamp = iso8601.parse_date(pipeline.finished_at)
             try:
                 service = ServiceDeploy.objects.get(name=project.name, environment=pipeline.ref, user_id=user_id)
+                if service.deploy_timestamp == timestamp:
+                    break
+
                 service.previous_deploy_timestamp = service.deploy_timestamp
                 service.deploy_timestamp = timestamp
                 service.save()
