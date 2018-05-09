@@ -6,7 +6,7 @@ from django.conf import settings
 from dashboard.models import ServiceDeploy
 
 
-@shared_task
+@shared_task(autoretry_for=(Exception,))
 def fetch_gitlab_deployment(user_id):
     environments = ['prod', 'preprod', 'staging']
 
