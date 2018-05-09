@@ -1,9 +1,3 @@
-import gitlab
-import iso8601
-import requests
-from collections import defaultdict
-
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.views.generic import TemplateView
@@ -11,6 +5,7 @@ from rest_framework import viewsets, permissions
 
 from dashboard.models import ServiceDeploy
 from dashboard.serializers import ServiceDeploySerializer
+from dashboard.tasks import fetch_gitlab_deployment
 
 
 class ServiceDeployViewSet(viewsets.ModelViewSet):
@@ -41,31 +36,10 @@ class IndexView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
 
-        environments = ['prod', 'preprod', 'staging']
-        service_deploys = []
+        fetch_gitlab_deployment.delay()
 
-        gl = gitlab.Gitlab('https://gitlab.inspectorio.com/', private_token=settings.GITLAB_PRIVATE_TOKEN,
-                           api_version='4')
-        projects = gl.projects.list(per_page=1000)
-        for project in projects:
-            if not project.path_with_namespace.startswith('saas/'):
-                continue
-            found = []
-            for pipeline in project.pipelines.list(status='success', per_page=100):
-                if pipeline.ref not in environments:
-                    continue
-
-                if pipeline.ref in found:
-                    continue
-
-                pipeline = project.pipelines.get(pipeline.id)
-
-                service_deploys.append({
-                    'environment': pipeline.ref,
-                    'name': project.name,
-                    'deploy_timestamp': iso8601.parse_date(pipeline.finished_at)
-                })
-                found.append(pipeline.ref)
+        service_deploys = ServiceDeploy.objects.filter(user=self.request.user).order_by('name')
+        environments = sorted(set(service_deploys.values_list('environment', flat=True)))
 
         context.update({
             'service_deploys': service_deploys,

@@ -18,6 +18,8 @@ django-allauth = "*"
 requests = "*"
 python-gitlab = "*"
 "iso8601" = "*"
+celery = "*"
+redis = "*"
 
 [dev-packages]
 ipdb = "*"
