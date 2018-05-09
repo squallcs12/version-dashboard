@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3d1b5716194e3a71b7a0009c5d60f06e7e17507b6eb4eedfc5a02607d7c2a803"
+            "sha256": "2a65d2cb5c7e32b4c934f754b4758b92352e4cb39721ecceb41207cbe553acbf"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -82,10 +82,10 @@
         },
         "django-allauth": {
             "hashes": [
-                "sha256:7b31526cccd1c46f9f09acf0703068e8a9669337d29eb065f7e8143c2d897339"
+                "sha256:7d9646e3560279d6294ebb4c361fef829708d106da697658cf158bf2ca57b474"
             ],
             "index": "pypi",
-            "version": "==0.35.0"
+            "version": "==0.36.0"
         },
         "django-appconf": {
             "hashes": [
@@ -156,6 +156,15 @@
                 "sha256:8c7309c718f94b3a625cb648ace320157ad16ff131ae0af362c9f21b80ef6ec4"
             ],
             "version": "==2.6"
+        },
+        "iso8601": {
+            "hashes": [
+                "sha256:210e0134677cc0d02f6028087fee1df1e1d76d372ee1db0bf30bf66c5c1c89a3",
+                "sha256:49c4b20e1f38aa5cf109ddcd39647ac419f928512c869dc01d5c7098eddede82",
+                "sha256:bbbae5fb4a7abfe71d4688fd64bff70b91bbd74ef6a99d964bab18f7fdf286dd"
+            ],
+            "index": "pypi",
+            "version": "==0.1.12"
         },
         "itypes": {
             "hashes": [
@@ -250,6 +259,13 @@
             ],
             "version": "==1.6.0"
         },
+        "python-gitlab": {
+            "hashes": [
+                "sha256:74ef4e98383043403d786d1719579b9a638666809b47d93a9fa8f0bd9f12ab84"
+            ],
+            "index": "pypi",
+            "version": "==1.3.0"
+        },
         "python3-openid": {
             "hashes": [
                 "sha256:0086da6b6ef3161cfe50fb1ee5cceaf2cda1700019fda03c2c5c440ca6abe4fa",
@@ -269,6 +285,7 @@
                 "sha256:6a1b267aa90cac58ac3a765d067950e7dbbf75b1da07e895d1f594193a40a38b",
                 "sha256:9c443e7324ba5b85070c4a818ade28bfabedf16ea10206da1132edaa6dda237e"
             ],
+            "index": "pypi",
             "version": "==2.18.4"
         },
         "requests-oauthlib": {

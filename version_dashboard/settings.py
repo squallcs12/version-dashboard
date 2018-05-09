@@ -23,7 +23,8 @@ env = environ.Env(
     DATABASE_URL=(str, 'sqlite:///db.sqlite3'),
     EMAIL_URL=(str, 'smtp://localhost:25'),
     DEFAULT_FROM_EMAIL=(str, 'admin@domain.com'),
-    REDIS_URL=(str, 'rediscache://127.0.0.1:6379/1')
+    REDIS_URL=(str, 'rediscache://127.0.0.1:6379/1'),
+    GITLAB_PRIVATE_TOKEN=(str, 'GITLAB_PRIVATE_TOKEN'),
 )
 ENV = env  # so it will be copied to django.conf.settings
 env.read_env('.env')
@@ -187,3 +188,5 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+GITLAB_PRIVATE_TOKEN = env('GITLAB_PRIVATE_TOKEN')

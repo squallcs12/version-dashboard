@@ -15,6 +15,9 @@ django-rest-swagger = "*"
 whitenoise = "*"
 django-allauth = "*"
 "flake8" = "*"
+requests = "*"
+python-gitlab = "*"
+"iso8601" = "*"
 
 [dev-packages]
 ipdb = "*"
