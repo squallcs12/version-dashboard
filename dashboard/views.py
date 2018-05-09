@@ -5,7 +5,6 @@ from rest_framework import viewsets, permissions
 
 from dashboard.models import ServiceDeploy
 from dashboard.serializers import ServiceDeploySerializer
-from dashboard.tasks import fetch_gitlab_deployment
 
 
 class ServiceDeployViewSet(viewsets.ModelViewSet):
@@ -35,8 +34,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-
-        fetch_gitlab_deployment.delay(self.request.user.id)
 
         service_deploys = ServiceDeploy.objects.filter(user=self.request.user).order_by('name')
         environments = sorted(set(service_deploys.values_list('environment', flat=True)))

@@ -86,8 +86,8 @@
 
     var reloadSeconds = Cookies.get('reload_seconds');
     reloadSeconds = parseInt(reloadSeconds);
-    if (reloadSeconds < 15 || isNaN(reloadSeconds)) {
-      reloadSeconds = 15
+    if (reloadSeconds < 5 || isNaN(reloadSeconds)) {
+      reloadSeconds = 5
     }
     reloadSecondsBox.val(reloadSeconds);
 

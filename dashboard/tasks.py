@@ -16,27 +16,33 @@ def fetch_gitlab_deployment(user_id):
     for project in projects:
         if not project.path_with_namespace.startswith('saas/'):
             continue
-        found = []
-        for pipeline in project.pipelines.list(status='success', per_page=100):
-            if pipeline.ref not in environments:
+
+        for environment in environments:
+            pipelines = project.pipelines.list(status='success', per_page=2, ref=environment)
+            if not pipelines:
                 continue
 
-            if pipeline.ref in found:
-                continue
-
-            found.append(pipeline.ref)
-
+            pipeline = pipelines[0]
             pipeline = project.pipelines.get(pipeline.id)
-
             timestamp = iso8601.parse_date(pipeline.finished_at)
+
+            previous_deploy_timestamp = None
+            if len(pipelines) > 1:
+                pipeline = pipelines[1]
+                pipeline = project.pipelines.get(pipeline.id)
+                previous_deploy_timestamp = iso8601.parse_date(pipeline.finished_at)
+
             try:
-                service = ServiceDeploy.objects.get(name=project.name, environment=pipeline.ref, user_id=user_id)
+                service = ServiceDeploy.objects.get(name=project.name, environment=environment, user_id=user_id)
                 if service.deploy_timestamp == timestamp:
                     break
 
-                service.previous_deploy_timestamp = service.deploy_timestamp
+                service.previous_deploy_timestamp = previous_deploy_timestamp
                 service.deploy_timestamp = timestamp
                 service.save()
             except ServiceDeploy.DoesNotExist:
                 ServiceDeploy.objects.create(name=project.name, environment=pipeline.ref, user_id=user_id,
-                                             deploy_timestamp=timestamp)
+                                             deploy_timestamp=timestamp,
+                                             previous_deploy_timestamp=previous_deploy_timestamp)
+
+    fetch_gitlab_deployment.apply_async(args=[user_id], countdown=5)
