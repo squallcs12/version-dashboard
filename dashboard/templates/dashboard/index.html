@@ -11,7 +11,7 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        <a href="{% url 'account_logout' %}">Logout</a>
+        <a href="{% url 'account_logout' %}">Logout {{ user.username }}</a>
       </div>
       <div class="col text-right">
         Reload per
@@ -52,14 +52,15 @@
                       <div class="card-body">
                         <h5 class="card-title">
                           {{ service_deploy.name }}
-                          {% if service_deploy.is_deployed_today %}
-                            <span class="badge badge-success">Today</span>
-                          {% endif %}
-                        </h5>
                         <span class="badge badge-secondary">{{ service_deploy.deploy_timestamp }}</span>
+                        <br />
                         {% if service_deploy.duration %}
                           <span class="badge badge-info">{{ service_deploy.duration }}</span>
                         {% endif %}
+                        {% if service_deploy.is_deployed_today %}
+                          <span class="badge badge-success">Today</span>
+                        {% endif %}
+                        </h5>
                       </div>
                     </div>
                   </div>
