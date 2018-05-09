@@ -7,7 +7,7 @@ class ServiceDeploy(models.Model):
     name = models.CharField(max_length=255)
     environment = models.CharField(max_length=30)
     deploy_timestamp = models.DateTimeField(default=timezone.now, blank=True)
-    previous_deploy_timestamp = models.DateTimeField(default=timezone.now, blank=True)
+    previous_deploy_timestamp = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
 
     @property
