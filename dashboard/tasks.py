@@ -26,21 +26,22 @@ def fetch_gitlab_deployment(user_id):
             pipeline = project.pipelines.get(pipeline.id)
             timestamp = iso8601.parse_date(pipeline.finished_at)
 
-            previous_deploy_timestamp = None
-            if len(pipelines) > 1:
-                pipeline = pipelines[1]
-                pipeline = project.pipelines.get(pipeline.id)
-                previous_deploy_timestamp = iso8601.parse_date(pipeline.finished_at)
-
             try:
                 service = ServiceDeploy.objects.get(name=project.name, environment=environment, user_id=user_id)
                 if service.deploy_timestamp == timestamp:
                     break
 
-                service.previous_deploy_timestamp = previous_deploy_timestamp
+                service.previous_deploy_timestamp = service.deploy_timestamp
                 service.deploy_timestamp = timestamp
                 service.save()
             except ServiceDeploy.DoesNotExist:
+
+                previous_deploy_timestamp = None
+                if len(pipelines) > 1:
+                    pipeline = pipelines[1]
+                    pipeline = project.pipelines.get(pipeline.id)
+                    previous_deploy_timestamp = iso8601.parse_date(pipeline.finished_at)
+
                 ServiceDeploy.objects.create(name=project.name, environment=pipeline.ref, user_id=user_id,
                                              deploy_timestamp=timestamp,
                                              previous_deploy_timestamp=previous_deploy_timestamp)
