@@ -25,6 +25,8 @@ def fetch_gitlab_deployment(user_id):
             if pipeline.ref in found:
                 continue
 
+            found.append(pipeline.ref)
+
             pipeline = project.pipelines.get(pipeline.id)
 
             service_deploys.append({
