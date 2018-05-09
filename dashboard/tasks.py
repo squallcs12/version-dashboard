@@ -9,7 +9,6 @@ from dashboard.models import ServiceDeploy
 @shared_task
 def fetch_gitlab_deployment(user_id):
     environments = ['prod', 'preprod', 'staging']
-    service_deploys = []
 
     gl = gitlab.Gitlab('https://gitlab.inspectorio.com/', private_token=settings.GITLAB_PRIVATE_TOKEN,
                        api_version='4')
@@ -29,12 +28,12 @@ def fetch_gitlab_deployment(user_id):
 
             pipeline = project.pipelines.get(pipeline.id)
 
-            service_deploys.append({
-                'environment': pipeline.ref,
-                'name': project.name,
-                'deploy_timestamp': iso8601.parse_date(pipeline.finished_at)
-            })
-            ServiceDeploy.objects.update_or_create(name=project.name, environment=pipeline.ref, user_id=user_id,
-                                                   defaults={
-                                                       'deploy_timestamp': iso8601.parse_date(pipeline.finished_at)
-                                                   })
+            timestamp = iso8601.parse_date(pipeline.finished_at)
+            try:
+                service = ServiceDeploy.objects.get(name=project.name, environment=pipeline.ref, user_id=user_id)
+                service.previous_deploy_timestamp = service.deploy_timestamp
+                service.deploy_timestamp = timestamp
+                service.save()
+            except ServiceDeploy.DoesNotExist:
+                ServiceDeploy.objects.create(name=project.name, environment=pipeline.ref, user_id=user_id,
+                                             deploy_timestamp=timestamp)

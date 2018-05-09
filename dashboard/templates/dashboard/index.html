@@ -50,11 +50,14 @@
                   <div class="col-md-3" style="margin-bottom: 30px">
                     <div class="card card-{{ service_deploy.environment }}">
                       <div class="card-body">
-                        <h5 class="card-title">{{ service_deploy.name }}</h5>
+                        <h5 class="card-title">
+                          {{ service_deploy.name }}
+                          {% if service_deploy.is_deployed_today %}
+                            <span class="badge badge-success">Today</span>
+                          {% endif %}
+                        </h5>
                         <span class="badge badge-secondary">{{ service_deploy.deploy_timestamp }}</span>
-                        {% if service_deploy.is_deployed_today %}
-                          <span class="badge badge-success">Today</span>
-                        {% endif %}
+                        <span class="badge badge-info">{{ service_deploy.duration }}</span>
                       </div>
                     </div>
                   </div>
