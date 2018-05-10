@@ -18,6 +18,7 @@ def fetch_gitlab_deployment(user_id):
             continue
 
         for environment in environments:
+
             pipelines = project.pipelines.list(status='success', per_page=2, ref=environment)
             if not pipelines:
                 continue
@@ -29,7 +30,7 @@ def fetch_gitlab_deployment(user_id):
             try:
                 service = ServiceDeploy.objects.get(name=project.name, environment=environment, user_id=user_id)
                 if service.deploy_timestamp == timestamp:
-                    break
+                    continue
 
                 service.previous_deploy_timestamp = service.deploy_timestamp
                 service.deploy_timestamp = timestamp
