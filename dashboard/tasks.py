@@ -1,5 +1,6 @@
 import gitlab
 import iso8601
+import re
 from celery import shared_task
 from django.conf import settings
 
@@ -9,6 +10,9 @@ from dashboard.models import ServiceDeploy
 @shared_task(autoretry_for=(Exception,))
 def fetch_gitlab_deployment(user_id):
     environments = ['prod', 'preprod', 'staging']
+    tag_to_environment = {
+        'rc': 'preprod',
+    }
 
     gl = gitlab.Gitlab('https://gitlab.inspectorio.com/', private_token=settings.GITLAB_PRIVATE_TOKEN,
                        api_version='4')
@@ -17,13 +21,34 @@ def fetch_gitlab_deployment(user_id):
         if not project.path_with_namespace.startswith('saas/'):
             continue
 
-        for environment in environments:
+        pipelines = project.pipelines.list(status='success', per_page=100)
+        if not pipelines:
+            continue
 
-            pipelines = project.pipelines.list(status='success', per_page=2, ref=environment)
-            if not pipelines:
+        found = []
+        for pipeline in pipelines:
+            environment = pipeline.ref
+            if environment not in environments:
+                match = re.match(r'^v(\d+)\.(\d+)\.(\d+)(-(.*)\.(\d+))?$', environment)
+                match2 = re.match(r'^release-v(\d+)\.(\d+)\.(\d+)?$', environment)
+                if match:
+                    groups = match.groups()
+                    if len(groups) == 3:
+                        environment = 'prod'
+                    else:
+                        environment = tag_to_environment.get(groups[4])
+                elif match2:
+                    environment = 'preprod'
+                else:
+                    continue
+
+            if environment in found:
                 continue
+            if set(found) == set(environments):
+                break
 
-            pipeline = pipelines[0]
+            found.append(environment)
+
             pipeline = project.pipelines.get(pipeline.id)
             timestamp = iso8601.parse_date(pipeline.finished_at)
 
@@ -36,14 +61,8 @@ def fetch_gitlab_deployment(user_id):
                 service.deploy_timestamp = timestamp
                 service.save()
             except ServiceDeploy.DoesNotExist:
-
                 previous_deploy_timestamp = None
-                if len(pipelines) > 1:
-                    pipeline = pipelines[1]
-                    pipeline = project.pipelines.get(pipeline.id)
-                    previous_deploy_timestamp = iso8601.parse_date(pipeline.finished_at)
-
-                ServiceDeploy.objects.create(name=project.name, environment=pipeline.ref, user_id=user_id,
+                ServiceDeploy.objects.create(name=project.name, environment=environment, user_id=user_id,
                                              deploy_timestamp=timestamp,
                                              previous_deploy_timestamp=previous_deploy_timestamp)
 

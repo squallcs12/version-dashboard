@@ -10,6 +10,11 @@ class ServiceDeploy(models.Model):
     previous_deploy_timestamp = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
 
+    class Meta:
+        unique_together = (
+            ('name', 'environment', 'user'),
+        )
+
     @property
     def is_deployed_today(self):
         return self.deploy_timestamp.date() == timezone.now().date()
