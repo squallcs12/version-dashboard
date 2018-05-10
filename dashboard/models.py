@@ -14,11 +14,11 @@ class ServiceDeploy(models.Model):
     def is_deployed_today(self):
         return self.deploy_timestamp.date() == timezone.now().date()
 
-    @property
-    def duration(self):
-        if not self.previous_deploy_timestamp:
+    def calculate_duration(self, start, end):
+        if not start:
             return ''
-        diff = self.deploy_timestamp - self.previous_deploy_timestamp
+
+        diff = end - start
         times = []
         if diff.days:
             times.append('{}d'.format(diff.days))
@@ -37,3 +37,11 @@ class ServiceDeploy(models.Model):
                 if not hours:
                     times.append('{}s'.format(secs))
         return ' '.join(times)
+
+    @property
+    def previous_duration(self):
+        return self.calculate_duration(self.previous_deploy_timestamp, self.deploy_timestamp)
+
+    @property
+    def duration(self):
+        return self.calculate_duration(self.deploy_timestamp, timezone.now())
