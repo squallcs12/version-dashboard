@@ -59,11 +59,12 @@ def fetch_gitlab_deployment(user_id):
 
                 service.previous_deploy_timestamp = service.deploy_timestamp
                 service.deploy_timestamp = timestamp
+                service.version = pipeline.ref
                 service.save()
             except ServiceDeploy.DoesNotExist:
                 previous_deploy_timestamp = None
                 ServiceDeploy.objects.create(name=project.name, environment=environment, user_id=user_id,
-                                             deploy_timestamp=timestamp,
+                                             deploy_timestamp=timestamp, version=pipeline.ref,
                                              previous_deploy_timestamp=previous_deploy_timestamp)
 
     fetch_gitlab_deployment.apply_async(args=[user_id], countdown=5)

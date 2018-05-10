@@ -53,6 +53,7 @@
                         <h4 class="card-title">
                           {{ service_deploy.name }}
                         </h4>
+
                         <span class="badge {% if service_deploy.is_deployed_today %}badge-success{% else %}badge-secondary{% endif %}">
                           {{ service_deploy.deploy_timestamp }}
                         </span>
@@ -62,6 +63,11 @@
                         {% endif %}
                         {% if service_deploy.previous_duration %}
                           <span class="badge badge">{{ service_deploy.previous_duration }}</span>
+                        {% endif %}
+                        {% if service_deploy.version != environment %}
+                          <span class="badge badge-info">
+                            {{ service_deploy.version }}
+                          </span>
                         {% endif %}
                       </div>
                     </div>

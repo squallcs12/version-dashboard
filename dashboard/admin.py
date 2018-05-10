@@ -4,7 +4,7 @@ from dashboard.models import ServiceDeploy
 
 
 class ServiceDeployAdmin(admin.ModelAdmin):
-    list_display = ('name', 'environment', 'deploy_timestamp')
+    list_display = ('name', 'environment', 'deploy_timestamp', 'version')
     list_filter = ('environment', 'user')
     search_fields = ('name',)
 

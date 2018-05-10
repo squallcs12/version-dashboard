@@ -9,6 +9,7 @@ class ServiceDeploy(models.Model):
     deploy_timestamp = models.DateTimeField(default=timezone.now, blank=True)
     previous_deploy_timestamp = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)
+    version = models.CharField(max_length=50, default='', blank='')
 
     class Meta:
         unique_together = (
