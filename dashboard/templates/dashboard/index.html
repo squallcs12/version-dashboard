@@ -26,15 +26,17 @@
     </div>
     <div class="row">
       <div class="col">
+        <a name="content"></a>
         {% if not environments %}
           <div class="alert alert-warning">No data for displaying.</div>
         {% endif %}
         <nav>
           <div class="nav nav-tabs" id="environment-tab" role="tablist">
             {% for environment in environments %}
-              <a class="nav-item nav-link"
-                 id="nav-{{ environment }}-tab" data-toggle="tab"
-                 href="#nav-{{ environment }}" role="tab" aria-controls="nav-{{ environment }}" aria-selected="true">
+              <a class="nav-item nav-link {% if environment == selected %}active{% endif %}"
+                 id="nav-{{ environment }}-tab" data-toggle="tab" name="nav-{{ environment }}"
+                 href="?selected={{ environment }}#content" role="tab" aria-controls="nav-{{ environment }}"
+                 aria-selected="true">
                 {{ environment.title }}
               </a>
             {% endfor %}
@@ -42,40 +44,40 @@
         </nav>
         <div class="tab-content" id="nav-tabContent">
           {% for environment in environments %}
-          <div class="tab-pane fade show" id="nav-{{ environment }}"
-               role="tabpanel" aria-labelledby="nav-{{ environment }}-tab">
-            <div class="row">
-              {% for service_deploy in service_deploys %}
-                {% if environment == service_deploy.environment %}
-                  <div class="col-md-3" style="margin-bottom: 30px">
-                    <div class="card card-{{ service_deploy.environment }}">
-                      <div class="card-body">
-                        <h4 class="card-title">
-                          {{ service_deploy.name }}
-                        </h4>
+            <div class="tab-pane fade show {% if environment == selected %}active{% endif %}" id="nav-{{ environment }}"
+                 role="tabpanel" aria-labelledby="nav-{{ environment }}-tab">
+              <div class="row">
+                {% for service_deploy in service_deploys %}
+                  {% if environment == service_deploy.environment %}
+                    <div class="col-md-3" style="margin-bottom: 30px">
+                      <div class="card card-{{ service_deploy.environment }}">
+                        <div class="card-body">
+                          <h4 class="card-title">
+                            {{ service_deploy.name }}
+                          </h4>
 
-                        <span class="badge {% if service_deploy.is_deployed_today %}badge-success{% else %}badge-secondary{% endif %}">
-                          {{ service_deploy.deploy_timestamp }}
-                        </span>
-                        <br />
-                        {% if service_deploy.duration %}
-                          <span class="badge badge-info">{{ service_deploy.duration }}</span>
-                        {% endif %}
-                        {% if service_deploy.previous_duration %}
-                          <span class="badge badge">{{ service_deploy.previous_duration }}</span>
-                        {% endif %}
-                        {% if service_deploy.version != environment %}
-                          <span class="badge badge-info">
-                            {{ service_deploy.version }}
+                          <span class="badge {% if service_deploy.is_deployed_today %}badge-success{% else %}badge-secondary{% endif %}">
+                            {{ service_deploy.deploy_timestamp }}
                           </span>
-                        {% endif %}
+                          <br />
+                          {% if service_deploy.duration %}
+                            <span class="badge badge-info">{{ service_deploy.duration }}</span>
+                          {% endif %}
+                          {% if service_deploy.previous_duration %}
+                            <span class="badge badge">{{ service_deploy.previous_duration }}</span>
+                          {% endif %}
+                          {% if service_deploy.version != environment %}
+                            <span class="badge badge-info">
+                              {{ service_deploy.version }}
+                            </span>
+                          {% endif %}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                {% endif %}
-              {% endfor %}
+                  {% endif %}
+                {% endfor %}
+              </div>
             </div>
-          </div>
           {% endfor %}
         </div>
       </div>
@@ -87,8 +89,9 @@
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script>
   jQuery(function() {
-    jQuery('.nav-link').click(function () {
-      location.href = jQuery(this).prop('href')
+    jQuery('.nav-link').click(function (e) {
+      e.preventDefault();
+      location.replace(jQuery(this).prop('href'));
     });
 
     var reloadSecondsBox = jQuery('#reload_seconds');
@@ -113,12 +116,6 @@
     reloadSecondsBox.change(function () {
       Cookies.set('reload_seconds', jQuery(this).val());
     });
-
-    if (location.hash) {
-      jQuery(location.hash + '-tab').click();
-    } else {
-      jQuery('#environment-tab a:first-child').click();
-    }
   })
   </script>
 {% endblock %}

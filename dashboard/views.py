@@ -41,5 +41,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context.update({
             'service_deploys': service_deploys,
             'environments': environments,
+            'selected': self.request.GET.get('selected', environments[0])
         })
         return context
