@@ -20,6 +20,10 @@ class ServiceDeploy(models.Model):
     def is_deployed_today(self):
         return self.deploy_timestamp.date() == timezone.now().date()
 
+    @property
+    def is_deployed_yesterday(self):
+        return self.deploy_timestamp.date() == timezone.now().date() - timezone.timedelta(days=1)
+
     def calculate_duration(self, start, end):
         if not start:
             return ''
