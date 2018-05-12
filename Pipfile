@@ -20,6 +20,7 @@ python-gitlab = "*"
 "iso8601" = "*"
 celery = "*"
 redis = "*"
+cached-property = "*"
 
 [dev-packages]
 ipdb = "*"

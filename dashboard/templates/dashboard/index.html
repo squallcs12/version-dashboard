@@ -58,7 +58,15 @@
                             {{ service_deploy.name }}
                           </h4>
 
-                          <span class="badge {% if service_deploy.is_deployed_today %}badge-success{% elif service_deploy.is_deployed_yesterday %}badge-warning{% else %}badge-secondary{% endif %}">
+                          <span class="badge
+                              {% if service_deploy.is_deployed_today %}
+                                badge-success
+                              {% elif service_deploy.is_deployed_yesterday %}
+                                badge-warning
+                              {% elif service_deploy.deployed_days_ago < 7 %}
+                                badge-dark
+                              {% else %}
+                                badge-secondary{% endif %}">
                             {{ service_deploy.deploy_timestamp }}
                           </span>
                           <br />

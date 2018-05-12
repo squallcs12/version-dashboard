@@ -1,3 +1,4 @@
+from cached_property import cached_property
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -16,13 +17,17 @@ class ServiceDeploy(models.Model):
             ('name', 'environment', 'user'),
         )
 
+    @cached_property
+    def deployed_days_ago(self):
+        return (timezone.now().date() - self.deploy_timestamp.date()).days
+
     @property
     def is_deployed_today(self):
-        return self.deploy_timestamp.date() == timezone.now().date()
+        return self.deployed_days_ago == 0
 
     @property
     def is_deployed_yesterday(self):
-        return self.deploy_timestamp.date() == timezone.now().date() - timezone.timedelta(days=1)
+        return self.deployed_days_ago == 1
 
     def calculate_duration(self, start, end):
         if not start:
