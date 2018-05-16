@@ -33,7 +33,7 @@ def fetch_gitlab_deployment(user_id):
                 match2 = re.match(r'^release-v(\d+)\.(\d+)\.(\d+)?$', environment)
                 if match:
                     groups = match.groups()
-                    if len(groups) == 3:
+                    if (len(groups) == 3) or (groups[-1] is None):
                         environment = 'prod'
                     else:
                         environment = tag_to_environment.get(groups[4])
