@@ -38,7 +38,7 @@ def fetch_gitlab_deployment(user_id):
                     else:
                         environment = tag_to_environment.get(groups[4])
                 elif match2:
-                    environment = 'preprod'
+                    environment = 'staging'
                 else:
                     continue
 
